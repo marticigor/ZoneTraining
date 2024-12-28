@@ -173,7 +173,7 @@ class zone2View extends WatchUi.DataField {
             var garmin_dficons_15 = WatchUi.loadResource(Rez.Fonts.garmin_dficons_15);
             var garmin_dficons_22 = WatchUi.loadResource(Rez.Fonts.garmin_dficons_22);
             var icon_size = hr_text_size == Graphics.FONT_SMALL ? garmin_dficons_22 : garmin_dficons_15;
-            dc.drawText(xmax + hr_text_x_offset - dc.getTextWidthInPixels(current_hr.format("%.0f"), hr_text_size)*0.75, screen_height/2, icon_size, "0", Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
+            dc.drawText(xmax + hr_text_x_offset - (dc.getTextWidthInPixels(current_hr.format("%.0f"), hr_text_size)*0.75) - 1, screen_height/2, icon_size, "0", Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
 
             // Text
             dc.setColor(hr_color, Graphics.COLOR_TRANSPARENT);
