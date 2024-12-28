@@ -39,6 +39,10 @@
         <setting propertyKey="@Properties.RoundedBoxes" title="@Strings.RoundedBoxes">
             <settingConfig type="boolean" required="true" />
         </setting>
+
+        <setting propertyKey="@Properties.LineTextVisible" title="@Strings.LineTextVisible">
+            <settingConfig type="boolean" required="true" />
+        </setting>
     </group>
 
     <group id="alertGroup" title="@Strings.AlertGroupTitle" description="">

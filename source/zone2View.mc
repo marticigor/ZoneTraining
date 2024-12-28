@@ -8,6 +8,15 @@ import Toybox.Attention;
 
 var default_foreground = Graphics.COLOR_PURPLE;
 
+// Add this constant at the top of the class
+const _HR_COLORS as Array<Number> = [
+    0x555555, // zone-1 gray
+    0x00aaff, // zone 2 blue
+    0x55ff00, // zone 3 green
+    0xaaff00, // zone 4 yellow
+    0xff5500, // zone 5 orange
+    0xaa0000 // max red
+];
 
 class zone2View extends WatchUi.DataField {
 
@@ -67,7 +76,7 @@ class zone2View extends WatchUi.DataField {
         current_zone = Properties.getValue("ZoneNumber");
         vibrate_above = Properties.getValue("AlertAbove");
         vibration_frequency = Properties.getValue("AlertFrequency");
-
+        line_text_visible = Properties.getValue("LineTextVisible");
 
         var hr_zone_start_offset = (current_zone == 3) ? 5 : 3;
         hr_zone_start = hr_zones[current_zone - 1] - hr_zone_start_offset;
@@ -154,8 +163,22 @@ class zone2View extends WatchUi.DataField {
             dc.drawText(xmax + 3, screen_height - line_y_offset_below - 10, line_text_size, hr_zone_start.format("%d"), Graphics.TEXT_JUSTIFY_LEFT);
         }
 
-        dc.setColor(hr_text_color, background_color);
-        dc.drawText(xmax + hr_text_x_offset, screen_height/2 - 15, hr_text_size, current_hr.format("%.0f"), Graphics.TEXT_JUSTIFY_CENTER);
+        // Render heart rate icon and text
+        if (current_hr > 0) {
+            var hr_zone = get_hr_zone(current_hr);
+            var hr_color = get_hr_color(hr_zone);
+
+            // Icon
+            dc.setColor(hr_color, Graphics.COLOR_TRANSPARENT);
+            var garmin_dficons_15 = WatchUi.loadResource(Rez.Fonts.garmin_dficons_15);
+            var garmin_dficons_22 = WatchUi.loadResource(Rez.Fonts.garmin_dficons_22);
+            var icon_size = hr_text_size == Graphics.FONT_SMALL ? garmin_dficons_22 : garmin_dficons_15;
+            dc.drawText(xmax + hr_text_x_offset - dc.getTextWidthInPixels(current_hr.format("%.0f"), hr_text_size)*0.75, screen_height/2, icon_size, "0", Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
+
+            // Text
+            dc.setColor(hr_color, Graphics.COLOR_TRANSPARENT);
+            dc.drawText(xmax + hr_text_x_offset, screen_height/2, hr_text_size, current_hr.format("%.0f"), Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
+        }
 
         var k = (line_y_offset_above - (screen_height - line_y_offset_below)) / (hr_zone_end - hr_zone_start);
 
@@ -203,6 +226,20 @@ class zone2View extends WatchUi.DataField {
             Attention.vibrate(vibrations);
             time_since_last_vibration = 0;
         }
+    }
+
+    function get_hr_zone(hr as Number) as Number {
+        var zones = UserProfile.getHeartRateZones(current_sport);
+        for (var i = 0; i < zones.size(); i++) {
+            if (hr < zones[i]) {
+                return i;
+            }
+        }
+        return zones.size();
+    }
+
+    function get_hr_color(zone as Number) as Number {
+        return _HR_COLORS[zone];
     }
 
     function get_box_color(hr) {
@@ -306,19 +343,19 @@ class zone2View extends WatchUi.DataField {
 
         line_text_visible = true;
         if (screen_height < 120) {
-            line_text_visible = false;
+            line_text_visible = Properties.getValue("LineTextVisible");
         }
         if (screen_width < 190) {
-            line_text_visible = false;
+            line_text_visible = Properties.getValue("LineTextVisible");
         }
 
         return line_text_size;
     }
 
     function get_hr_text_offset(screen_width, screen_height) {
-        var hr_text_x_offset = 25;
+        var hr_text_x_offset = 28;
         if (screen_width < 190) {
-            hr_text_x_offset = 15;
+            hr_text_x_offset = 18;
         }
 
         return hr_text_x_offset;

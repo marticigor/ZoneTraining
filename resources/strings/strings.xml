@@ -12,4 +12,5 @@
     <string id="AlertGroupTitle">Alert Settings</string>
     <string id="AlertAbove">Vibrate when leaving the Zone (above)</string>
     <string id="AlertFrequency">Minimum time between vibrations (seconds)</string>
+    <string id="LineTextVisible">Show Zone Label Text</string>
 </strings>
