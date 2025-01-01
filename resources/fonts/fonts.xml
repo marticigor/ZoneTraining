@@ -1,4 +1,9 @@
 <fonts>
   <font id="garmin_dficons_15" filename="garmin_dficons_15.fnt" antialias="true" />
   <font id="garmin_dficons_22" filename="garmin_dficons_22.fnt" antialias="true" />
+  <font id="DVS_XTINY" filename="DVS_XTINY_12.fnt" antialias="true" />
+  <font id="DVS_TINY" filename="DVS_TINY_16.fnt" antialias="true" />
+  <font id="DVS_SMALL" filename="DVS_SMALL_19.fnt" antialias="true" />
+<!--   <font id="DVS_MEDIUM" filename="DVS_MEDIUM.fnt" antialias="true" />
+  <font id="DVS_LARGE" filename="DVS_LARGE.fnt" antialias="true" /> -->
 </fonts>

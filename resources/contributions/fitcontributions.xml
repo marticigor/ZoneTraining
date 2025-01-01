@@ -1,0 +1,4 @@
+<fitContributions>           
+    <fitField id="0" displayInChart="true" sortOrder="0" precision="0"
+        chartTitle="@Strings.HRZoneGraph" dataLabel="@Strings.HRZone" unitLabel="@Strings.HRZone_Unit" fillColor="#ff0000" />
+</fitContributions>

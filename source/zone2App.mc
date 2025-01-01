@@ -21,6 +21,11 @@ class zone2App extends Application.AppBase {
         return [ new zone2View() ] ;
     }
 
+    function onSettingsChanged() {
+        MySettings.load();
+        WatchUi.requestUpdate();
+    }
+
 }
 
 function getApp() as zone2App {

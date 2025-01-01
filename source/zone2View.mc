@@ -13,10 +13,11 @@ const _HR_COLORS as Array<Number> = [
     0x555555, // zone-1 gray
     0x00aaff, // zone 2 blue
     0x55ff00, // zone 3 green
-    0xaaff00, // zone 4 yellow
     0xff5500, // zone 5 orange
     0xaa0000 // max red
 ];
+
+enum {Smaller = 0, Normal = 1, Larger = 2}
 
 class zone2View extends WatchUi.DataField {
 
@@ -52,6 +53,12 @@ class zone2View extends WatchUi.DataField {
     var vibrate_above;
     var vibration_frequency;
 
+    var garmin_dficons_15;
+    var garmin_dficons_22;
+    var DVS_XTINY;
+    var DVS_TINY;
+    var DVS_SMALL;  
+
     function initialize() {
         DataField.initialize();
         current_hr = 42.0f;
@@ -66,17 +73,23 @@ class zone2View extends WatchUi.DataField {
 
         foreground_color = Graphics.COLOR_PURPLE;
         time_since_last_vibration = 120;
+        MySettings.load();
+        garmin_dficons_15 = WatchUi.loadResource(Rez.Fonts.garmin_dficons_15);
+        garmin_dficons_22 = WatchUi.loadResource(Rez.Fonts.garmin_dficons_22);
+        DVS_XTINY = WatchUi.loadResource(Rez.Fonts.DVS_XTINY);
+        DVS_TINY = WatchUi.loadResource(Rez.Fonts.DVS_TINY);
+        DVS_SMALL = WatchUi.loadResource(Rez.Fonts.DVS_SMALL);
     }
 
     function update_settings_from_properties() {
         obscurity_flags = DataField.getObscurityFlags();
-        seconds_per_box = Properties.getValue("SecondsPerBox");
-        n_boxes = Properties.getValue("NumberOfBoxes");
-        use_rounded_boxes = Properties.getValue("RoundedBoxes");
-        current_zone = Properties.getValue("ZoneNumber");
-        vibrate_above = Properties.getValue("AlertAbove");
-        vibration_frequency = Properties.getValue("AlertFrequency");
-        line_text_visible = Properties.getValue("LineTextVisible");
+        seconds_per_box = MySettings.secondsPerBox;
+        n_boxes = MySettings.numberOfBoxes;
+        use_rounded_boxes = MySettings.roundedBoxes;
+        current_zone = MySettings.zoneNumber;
+        vibrate_above = MySettings.alertAbove;
+        vibration_frequency = MySettings.alertFrequency;
+        line_text_visible = MySettings.lineTextVisible;
 
         var hr_zone_start_offset = (current_zone == 3) ? 5 : 3;
         hr_zone_start = hr_zones[current_zone - 1] - hr_zone_start_offset;
@@ -170,10 +183,8 @@ class zone2View extends WatchUi.DataField {
 
             // Icon
             dc.setColor(hr_color, Graphics.COLOR_TRANSPARENT);
-            var garmin_dficons_15 = WatchUi.loadResource(Rez.Fonts.garmin_dficons_15);
-            var garmin_dficons_22 = WatchUi.loadResource(Rez.Fonts.garmin_dficons_22);
             var icon_size = hr_text_size == Graphics.FONT_SMALL ? garmin_dficons_22 : garmin_dficons_15;
-            dc.drawText(xmax + hr_text_x_offset - (dc.getTextWidthInPixels(current_hr.format("%.0f"), hr_text_size)*0.75) - 1, screen_height/2, icon_size, "0", Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
+            dc.drawText(xmax + hr_text_x_offset - (dc.getTextWidthInPixels(current_hr.format("%.0f"), hr_text_size)*0.75) - 5, screen_height/2, icon_size, "0", Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
 
             // Text
             dc.setColor(hr_color, Graphics.COLOR_TRANSPARENT);
@@ -315,12 +326,12 @@ class zone2View extends WatchUi.DataField {
     }
 
     function get_hr_text_size(screen_width, screen_height) as Graphics.FontType {
-        var hr_text_size_enum = Properties.getValue("HrTextSize");
+        var hr_text_size_enum = MySettings.hrTextSize;
         var hr_text_size = Graphics.FONT_MEDIUM;
 
-        if (hr_text_size_enum == 0) {  // "Smaller"
+        if (hr_text_size_enum == Smaller) {  // "Smaller"
             hr_text_size = Graphics.FONT_SMALL;
-        } else if (hr_text_size_enum == 2) {  // "Larger"
+        } else if (hr_text_size_enum == Larger) {  // "Larger"
             hr_text_size =  Graphics.FONT_LARGE;
         }
 
@@ -335,18 +346,18 @@ class zone2View extends WatchUi.DataField {
     }
 
     function get_line_text_size(screen_width, screen_height) as Graphics.FontType {
-        var line_text_size_enum = Properties.getValue("LineTextSize");
-        var line_text_size = Graphics.FONT_XTINY;
-        if (line_text_size_enum == "Larger") {
-            line_text_size = Graphics.FONT_SMALL;
+        var line_text_size_enum = MySettings.lineTextSize;
+        var line_text_size = DVS_XTINY;
+        if (line_text_size_enum == Larger) {
+            line_text_size = DVS_TINY;
         }
 
         line_text_visible = true;
         if (screen_height < 120) {
-            line_text_visible = Properties.getValue("LineTextVisible");
+            line_text_visible = MySettings.lineTextVisible;
         }
         if (screen_width < 190) {
-            line_text_visible = Properties.getValue("LineTextVisible");
+            line_text_visible = MySettings.lineTextVisible;
         }
 
         return line_text_size;
@@ -376,7 +387,7 @@ class zone2View extends WatchUi.DataField {
     }
 
     function get_box_height(screen_height) {
-        return Properties.getValue("BoxHeight") * screen_height;
+        return MySettings.boxHeight * screen_height;
     }
 
     function print(str) as Void {
